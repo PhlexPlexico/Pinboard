@@ -3,12 +3,8 @@
 session_start();
 $servername = "localhost";
 $username = "root";
-$dbname = "pinboard";
-$password = "qwertyhero";
-//$servername = "lovett.usask.ca";
-//$username = "cmpt350_amm215";
-//$dbname = "cmpt350_amm215";
-//$password = "5eukmjjz9w";
+$dbname = "";
+$password = "";
 $email = $_SESSION["email"];
 
 $title = $_POST["title"];
