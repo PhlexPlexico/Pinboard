@@ -1,0 +1,124 @@
+@import url(http://fonts.googleapis.com/css?family=Exo:100,200,400);
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:700,400,300);
+/*TODO:
+	EDIT username and password field, transparent looks gross
+	Figure out how to span text more to right, may be good as is.
+	Incorporate into the login php we have
+	Figure out why .body and .grad break things*/
+html {
+    height: 100%;   
+}
+body{
+    height: 100%;
+	margin: 0;
+	padding: 0;
+	background: #000000;
+	background-image: url(APRILFOOLS.gif);
+       background-size: 100%;
+	background-repeat: no-repeat;
+		color: #fff;
+	font-family: Arial;
+	font-size: 12px;
+}
+
+.header{
+	position: fixed;
+	top: calc(50% - 35px);
+	left: calc(52% - 255px);
+	z-index: 2;
+}
+
+.header div{
+	float: left;
+	color: #fff;
+	font-family: 'Exo', sans-serif;
+	font-size: 40px;
+	font-weight: 250;
+}
+
+.header div span{
+	color: #5379fa !important;
+}
+
+.login{
+	position: fixed;
+	top: calc(50% - 75px);
+	left: calc(50% - 50px);
+	height: 150px;
+	width: 350px;
+	padding: 10px;
+	z-index: 2;
+}
+
+.login input[type=password]{
+	width: 250px;
+	height: 30px;
+	background: transparent;
+	border: 1px solid rgba(255,255,255,0.6);
+	border-radius: 2px;
+	color: #fff;
+	font-family: 'Exo', sans-serif;
+	font-size: 16px;
+	font-weight: 400;
+	padding: 4px;
+	margin-top: 10px;
+}
+
+.login input[type=button]{
+	width: 37%;
+	height: 25%;
+	background: #3b5998;
+	border: 1px solid #3b5998;
+	cursor: pointer;
+	border-radius: 2px;
+	color: white;
+	font-family: 'Exo', sans-serif;
+	font-size: 16px;
+	font-weight: 400;
+	padding: 6px;
+	margin-top: 10px;
+}
+.login button{
+	width: 37%;
+	height: 25%;
+	background: #dd4b39;
+	border: 1px solid #dd4b39;
+	cursor: pointer;
+	border-radius: 2px;
+	color: white;
+	font-family: 'Exo', sans-serif;
+	font-size: 16px;
+	font-weight: 400;
+	padding: 6px;
+	margin-top: 10px;
+}
+
+.login input[type=button]:hover,
+button:hover{
+	opacity: 0.8;
+}
+
+.login input[type=button]:active,
+button:hover{
+	opacity: 0.6;
+}
+
+.login input[type=button]:focus,
+button:focus{
+	outline: none;
+}
+
+::-webkit-input-placeholder{
+   color: rgba(255,255,255,0.6);
+}
+
+::-moz-input-placeholder{
+   color: rgba(255,255,255,0.6);
+}
+
+#signin-button {
+   padding: 15px;
+  }
+#oauth2-results pre { margin: 0; padding:0; width: 600px;}
+  .hide { display: none;}
+  .show { display: block;}

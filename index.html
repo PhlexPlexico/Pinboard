@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+      <!-- Fav and touch icons -->
+      <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/apple-touch-icon-144-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/apple-touch-icon-72-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" href="img/apple-touch-icon-57-precomposed.png">
+      <link rel="shortcut icon" href="img/favicon.png">
+        <meta name="viewport" content="width=device-width, user-scalable=yes">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="theme-color" content="#00ACDB">
+  <!-- G+ Login -->
+    <script src="https://apis.google.com/js/client:platform.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		var loginFinished = function(authResult)
+		{
+		  if (authResult)
+		  {
+			console.log(authResult);
+		  }
+
+		  gapi.client.load('oauth2', 'v2', function()
+		  {
+			gapi.client.oauth2.userinfo.get()
+			  .execute(function(resp)
+			  {
+				// Shows user email
+				console.log(resp.email);
+				createUserSession(resp.email);
+			  });
+		  });
+
+		};
+
+		var options = {
+		  'callback': loginFinished,
+		  'approvalprompt': 'force',
+		  'clientid': '928971590316-71bk3qt81hu6gckq7n2f7d9rsuotb24a.apps.googleusercontent.com',
+		  'scope': 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/userinfo.email',
+		  'requestvisibleactions': 'https://schemas.google.com/CommentActivity https://schemas.google.com/ReviewActivity',
+		  'cookiepolicy': 'single_host_origin',
+		  'theme': 'dark'
+		};
+
+		var renderBtn = function()
+		{
+		  gapi.signin.render("gsignin", options);
+		}
+
+	</script>
+  <meta charset="UTF-8">
+
+  <title>PinBoard Login</title>
+
+	<link rel="stylesheet" href="css/login-style.css">
+
+    <script src="js/prefixfree.min.js"></script>
+
+</head>
+
+<body onload="renderBtn()">
+	<div id="fb-root"></div>
+	<script src="https://connect.facebook.net/en_US/all.js"></script>
+    <script>
+    //initialize the facebook app for the login
+    FB.init({ appId: '385230424989175', status: true, cookie: true, xfbml : true });
+
+    /*
+    Logs the user into the Facebook app then it calls off to an AJAX function that saves the users email into 
+    */
+    function doLogin() { 
+        FB.login(function(response) {
+            if (response.authResponse) {
+               console.log('Welcome!  Fetching your information.... ');
+            FB.api('/me', function(response) {
+               console.log('Good to see you, ' + response.email + '.'); //press f12 to see the users email
+               createUserSession(response.email);
+            });
+            } else {
+                console.log('User cancelled login or did not fully authorize.');
+            }
+        } , {scope:'email'}); 
+    }
+
+    function createUserSession(email) {
+
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                 if(email == xmlhttp.responseText)
+                 {
+                    console.log("session created");
+                    window.location.href = 'display.php';
+                 }
+                 else
+                 {
+                    console.log("session NOT created successfully");
+                 }
+            }
+        }
+        xmlhttp.open("GET", "ajaxFunctions/createSesh.php?q=" + email, true);
+        xmlhttp.send();
+
+    }
+    </script>
+		<div class="header">
+			<div>Pin<span>Board</span></div>
+		</div>
+		<br>
+		<div class="login">
+				<!--<input id="123" type="text" placeholder="username" name="user"><br>-->
+				<!--<input type="password" placeholder="password" name="password"><br>-->
+				<!-- <input type="button" value="Login" onclick="createUserSession(document.getElementById('123').value)"> THIS IS SUPER BAD AND SHOULD NOT STAY-->
+				<!--<div id="renderMe"></div>   -->
+				<br><br>
+				<button id="gsignin">Google+ Login</button>
+				<input type="button" value="Facebook Login" onclick="doLogin();return true;">
+		</div>
+
+  <script src='https://codepen.io/assets/libs/fullpage/jquery.js'></script>
+
+</body>
+
+</html>
