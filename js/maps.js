@@ -49,7 +49,7 @@ function initialize()
 	//Loop through all the markers from the database and add them to the map
 	for(var i = 0; i < allMarkers.length; i++)
 	{
-		 placeMarker(allMarkers[i]["lat"],allMarkers[i]["lng"],allMarkers[i]["title"],allMarkers[i]["isVisited"], allMarkers[i]["description"],allMarkers[i]["address"]);
+		 placeMarker(allMarkers[i]["lat"],allMarkers[i]["lng"],allMarkers[i]["title"],allMarkers[i]["isVisited"], allMarkers[i]["description"],allMarkers[i]["address"], allMarkers[i]["timesVisited"]);
 	}
 	map.setCenter(new google.maps.LatLng(25,10));
 	google.maps.event.addListener(map, 'click', function(event){
@@ -100,6 +100,7 @@ function submitPin(){
 	description = document.getElementById("pinDescription").value;
 	description = excapeChars(description);
 	isVisited = document.getElementById("pinIsVisited");
+	timesVisited = document.getElementById("pinTimes").value;
 	if(isVisited.checked)
 	{
 		isVisited = true;
@@ -111,9 +112,9 @@ function submitPin(){
 	if(name != ""){
 		// Checks if the new pin is coming from a clickEvent or Address search to grab to proper latLng
 		if(fromClick == true){
-			createPin(name,address,currentOnClick.lat(),currentOnClick.lng(),description,isVisited);
+			createPin(name,address,currentOnClick.lat(),currentOnClick.lng(),description,isVisited,timesVisited);
 		} else {
-			createPin(name,address,newLatLng.lat(),newLatLng.lng(),description,isVisited);
+			createPin(name,address,newLatLng.lat(),newLatLng.lng(),description,isVisited,timesVisited);
 		}
 	} else {
 		var pinError = document.getElementById("pinNameError");
@@ -126,14 +127,14 @@ Creates and AJAX request to insert a new pin into the database, takes
 title, address, lat, lng, description and isVisited as parameters, the email 
 for a Pin is retrieved from the session and the id is generated in the Database.
 */
-function createPin(title, address, lat, lng, description, isVisited) {    
+function createPin(title, address, lat, lng, description, isVisited, timesVisited) {    
 	var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
 		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 			window.location = "display.php";
         }
     }
-	var postParams = "title="+title+"&address="+address+"&lat="+lat+"&lng="+lng+"&description="+description+"&isVisited="+isVisited;
+	var postParams = "title="+title+"&address="+address+"&lat="+lat+"&lng="+lng+"&description="+description+"&isVisited="+isVisited+"&timesVisited="+timesVisited;
     xmlhttp.open("POST", "ajaxFunctions/createPin.php", true);
 	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xmlhttp.send(postParams);
@@ -148,10 +149,6 @@ function confirmDelete(id)
 	if(confirm)
 	{
 		deletePin(id);
-	}
-	else
-	{
-		
 	}
 }
 
@@ -179,35 +176,45 @@ change the Title/Description, make sure the old ones are passed in. Also, the is
 MUST BE a boolean not an empty string or something else it wont work.
 */
 function updatePin() {    
-   var xmlhttp = new XMLHttpRequest();
-   xmlhttp.onreadystatechange = function() {
-      if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-			window.location = "display.php";
-      }
-   }
-	id = document.getElementById("updatePinID").value;
-	title = document.getElementById("updatePinName").value;
-	title = excapeChars(title);
-	description = document.getElementById("updatePinDescription").value;
-	description = excapeChars(description);
-	isVisited = document.getElementById("updatePinIsVisited");
-	if(isVisited.checked)
+	try
 	{
-		isVisited = true;
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function() {
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+					window.location = "display.php";
+			}
+		}
+			id = document.getElementById("updatePinID").value;
+			title = document.getElementById("updatePinName").value;
+			title = excapeChars(title);
+			description = document.getElementById("updatePinDescription").value;
+			description = excapeChars(description);
+			isVisited = document.getElementById("updatePinIsVisited");
+			timesVisited = document.getElementById("updatePinTimes").value;
+			if(isVisited.checked)
+			{
+				isVisited = true;
+			}
+			else
+			{
+				isVisited = false;
+			}
+			if(title != ""){
+				var postParams = "id="+id+"&title="+title+"&description="+description+"&isVisited="+isVisited+"&timesVisited="+timesVisited;
+				//alert(postParams);
+				xmlhttp.open("POST", "ajaxFunctions/updatePin.php", true);
+				xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+				xmlhttp.send(postParams);
+			} else {
+				var pinError = document.getElementById("updatePinNameError");
+				pinError.className = "";
+			}
 	}
-	else
+	catch(err) 
 	{
-		isVisited = false;
+		alert(err.message);
 	}
-	if(title != ""){
-		var postParams = "id="+id+"&title="+title+"&description="+description+"&isVisited="+isVisited;
-		xmlhttp.open("POST", "ajaxFunctions/updatePin.php", true);
-		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-		xmlhttp.send(postParams);
-	} else {
-		var pinError = document.getElementById("updatePinNameError");
-		pinError.className = "";
-	}
+
 }
 
 /* Takes in 4 variables and makes a marker using them
@@ -216,7 +223,7 @@ function updatePin() {
 	pinName : the title for the pin
 	description : the description for the pin
 */
-function placeMarker(pinLat,pinLng,pinName,isVisited, description, address){
+function placeMarker(pinLat,pinLng,pinName,isVisited, description, address, timesVisited){
 	//LatLng object for use on the marker
 	var latLng = new google.maps.LatLng(pinLat, pinLng);
 	var img;
@@ -236,6 +243,7 @@ function placeMarker(pinLat,pinLng,pinName,isVisited, description, address){
 	'<h3 id="firstHeading" class="firstHeading"><span class="label label-info">'+pinName+'</span></h3>'+
 	'<p><b><span class="label label-default">Address:</span></b> '+address+'</p><br>'+
 	'<p><b><span class="label label-default">Description:</span></b> '+description+'</p><br>'+
+	'<p><b><span class="label label-default">Times Visited:</span></b>'+timesVisited+'</p><br>'+
 	'</div>';
 	var infowindow = new google.maps.InfoWindow({
     content: contentString
@@ -310,7 +318,7 @@ function geoCodeAddress()
 			document.getElementById("pinAddress").value = sAddress;
 			newLatLng = results[0].geometry.location;
 		} else {
-			alert("Geocode was unsuccessful at finding given location." + status);
+			alert("Geocode was unsuccessful at finding given location. " + status);
 		}
 	});
 }

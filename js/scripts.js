@@ -10,7 +10,7 @@ function hideNewPinForm(){
 * Display the update form on the page, takes in the values for at pin, that are then set
 * as the initial values within the form fields, so they can easily be edited.
 */
-function showUpdateForm(id,title,description,isVisited){
+function showUpdateForm(id,title,description,isVisited,timesVisited){
 	hideNewPinForm();
 	var updateForm = document.getElementById("updatePinForm");
 	updateForm.className = "";
@@ -18,4 +18,5 @@ function showUpdateForm(id,title,description,isVisited){
 	document.getElementById("updatePinName").value = title;
 	document.getElementById("updatePinDescription").value = description;
 	document.getElementById("updatePinIsVisited").checked = isVisited;
+	document.getElementById("updatePinTimes").value = timesVisited;
 }

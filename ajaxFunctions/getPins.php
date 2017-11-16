@@ -11,10 +11,10 @@ $email = $_SESSION["email"];
  {
 	$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
 	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	//select all the pin information for this user
-	$sql = "SELECT * FROM pin_table WHERE email = '".$email."';";
-	$result = $conn->query($sql);
-	$fetch = $result->fetchAll();
+	//select all the pin information for this user.
+	$sql = $conn->prepare("SELECT * FROM pin_table WHERE email = ?");
+	$sql->execute([$email]);
+	$fetch = $sql->fetchAll();
 	$markers = array(); 
 	foreach($fetch as $row)
 	{		
@@ -26,7 +26,8 @@ $email = $_SESSION["email"];
 			"lat" => (double)$row["lat"],
 			"lng" => (double)$row["lng"],
 			"description" => $row["description"],
-			"isVisited" => (bool)$row["isVisited"]
+			"isVisited" => (bool)$row["isVisited"],
+			"timesVisited" => (int)$row["timesVisited"]
 		);
 		array_push($markers, $markerRow);
 	}

@@ -12,40 +12,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <!--Possible todo: Create it so users email or facebook name shows up on the title. Eg: Evan's Pinboard-->
-  <title>Pinboard!</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <meta name="theme-color" content="#00ACDB">
+	<meta charset="utf-8">
+	<!--Possible todo: Create it so users email or facebook name shows up on the title. Eg: Evan's Pinboard-->
+	<title>Pinboard!</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="theme-color" content="#00ACDB">
 	<!--link rel="stylesheet/less" href="less/bootstrap.less" type="text/css" /-->
 	<!--link rel="stylesheet/less" href="less/responsive.less" type="text/css" /-->
 	<!--script src="js/less-1.3.3.min.js"></script-->
 	<!--append ‘#!watch’ to the browser URL, then refresh the page. -->
-	
+
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/style.css" rel="stylesheet">
 
-  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-  <!--[if lt IE 9]>
-    <script src="js/html5shiv.js"></script>
-  <![endif]-->
+	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+	<script src="js/html5shiv.js"></script>
+	<![endif]-->
 
-  <!-- Fav and touch icons -->
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/apple-touch-icon-144-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/apple-touch-icon-114-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/apple-touch-icon-72-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" href="img/apple-touch-icon-57-precomposed.png">
-  <link rel="shortcut icon" href="img/favicon.png">
-  
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/scripts.js"></script>
-   <!-- <script src="https://www.google.com/jsapi?.js"></script> -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDHuV9sjE1h7ICy6y8ZTucnEUiu6YKFfIo" type="text/javascript"></script>
-    <script async defer src="js/maps.js" ></script> 
+	<!-- Fav and touch icons -->
+	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/apple-touch-icon-144-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/apple-touch-icon-114-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/apple-touch-icon-72-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" href="img/apple-touch-icon-57-precomposed.png">
+	<link rel="shortcut icon" href="img/favicon.png">
+
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?key=APIKEYHERE"></script>
+	<script async defer src="js/maps.js" ></script> 
+	<script type="text/javascript" src="js/scripts.js"></script>
     <script>
         //Still needs work. Does scroll but needs heavy mod
  /*       $(function () {
@@ -144,21 +143,20 @@
 				<div class="panel-group" id="panel-66082">
 				
 				<?php
-				// get the q parameter from URL
 				$servername = "localhost";
 				$username = "root";
-				$dbname = "";
-				$password = "";
+				$dbname = "pinboard";
+				$password = "qwertyhero";
 				$email = $_SESSION["email"];
 				//create connection to the database
 				 try
 				 {
 					$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
 					$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-					//select all the pin information for this user
-					$sql = "SELECT * FROM pin_table WHERE email = '".$email."';";
-					$result = $conn->query($sql);
-					$fetch = $result->fetchAll();
+					//select all the pin information for this user.
+					$sql = $conn->prepare("SELECT * FROM pin_table WHERE email = ?");
+					$sql->execute([$email]);
+					$fetch = $sql->fetchAll();
 					$markers = array(); 
 					foreach($fetch as $row)
 					{		
@@ -170,7 +168,8 @@
 							"lat" => (double)$row["lat"],
 							"lng" => (double)$row["lng"],
 							"description" => $row["description"],
-							"isVisited" => (bool)$row["isVisited"]
+							"isVisited" => (bool)$row["isVisited"],
+							"timesVisited" => (int)$row["timesVisited"]
 						);
 						array_push($markers, $markerRow);
 					    $visited;
@@ -182,8 +181,6 @@
 						{
 							$visited = "Not Yet Visited";
 						}
-					
-						
 						// the END; MUST be on its own line, and be right at the start of the line without tabs, dont try to reformat or you will risk my wrath - Andrew
 						echo <<<END
 						<div class="panel panel-default">
@@ -195,7 +192,8 @@
 								<strong>Address:</strong> $row[address] <br>
 								<strong>Description: </strong> $row[description]<br>
 								<strong>Status: </strong> $visited<br>
-                                <button type="button" class="btn btn-sm" id="update" onclick ="showUpdateForm($row[id], '$row[title]', '$row[description]', $row[isVisited]);">Update</button>
+								<strong>Times Visited: </strong> $row[timesVisited]<br>
+                                <button type="button" class="btn btn-sm" id="update" onclick ="showUpdateForm($row[id], '$row[title]', '$row[description]', $row[isVisited], $row[timesVisited]);">Update</button>
                                 <br>
 							</div>
 						</div>
@@ -206,7 +204,7 @@ END;
 				}
 				catch(PDOException $e)
 				{
-					echo "failz for DB";
+					echo "Failed to load markers. Exception: " . $e;
 				}
 				?>
 					
@@ -221,7 +219,8 @@ END;
 				<input id="pinName" name="pinName" placeholder="Pin Name" type="text" class="form-control"><br>
 				<input id="pinAddress" name="pinAddress" placeholder="Pin Address (Optional)" type="text" class="form-control"><br>
 				<textarea id="pinDescription" name="pinDescription" placeholder="Enter A Description For Your New Pin!" style="resize:none;" class="form-control"></textarea><br>
-				<input type="checkbox" id="pinIsVisited" name="visitedCheck" value="true"> Have you been here before?<br><br/>
+				<input type="checkbox" id="pinIsVisited" name="visitedCheck" value="true"> Have you been here before? If so, how many times?<br>
+				<input id="pinTimes" name="pinTimesVisited" placeholder="0" type="number" class="form-control"><br><br>
 				</form>
                 <button type="submit" class="btn btn-primary btn-med" id="submit" onclick ="submitPin();">Send</button>
 			</div>
@@ -233,7 +232,8 @@ END;
 				<p id="updatePinNameError" name="pinNameError" style="color: red;" type="text" class="hidden">*A name is required.</p>
 				<input id="updatePinName" name="updatePinName" placeholder="Enter a New Name" type="text" class="form-control"><br>
 				<textarea id="updatePinDescription" name="updatePinDescription" placeholder="Enter A New Description For This Pin" style="resize:none;" class="form-control"></textarea><br>
-				<input type="checkbox" id="updatePinIsVisited" name="updateVisitedCheck" value="true"> Have you visited here yet?<br><br/>
+				<input type="checkbox" id="updatePinIsVisited" name="updateVisitedCheck" value="true"> Have you visited here yet? How many times?<br>
+				<input id="updatePinTimes" name="updatePinTimes" class="form-control" type="number"><br><br>
 				<input id="updatePinID" name="updatePinID" placeholder="" type="text" class="hidden">
 				<input id="updatePinAddress" name="updatePinAddress" type="test" class="hidden">
 				</form>

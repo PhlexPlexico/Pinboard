@@ -143,8 +143,12 @@
 				// get the q parameter from URL
 				$servername = "localhost";
 				$username = "root";
-				$dbname = "";
-				$password = "";
+				$dbname = "pinboard";
+				$password = "qwertyhero";
+				//$servername = "lovett.usask.ca";
+				//$username = "cmpt350_amm215";
+				//$dbname = "cmpt350_amm215";
+				//$password = "5eukmjjz9w";
 				$email = $_GET["email"];
 				//create connection to the database
 				 try

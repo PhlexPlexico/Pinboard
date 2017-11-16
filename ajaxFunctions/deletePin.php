@@ -5,6 +5,10 @@ $servername = "localhost";
 $username = "root";
 $dbname = "";
 $password = "";
+//$servername = "lovett.usask.ca";
+//$username = "cmpt350_amm215";
+//$dbname = "cmpt350_amm215";
+//$password = "5eukmjjz9w";
 $email = $_SESSION["email"];
 
 $id = (int)$_POST["id"];

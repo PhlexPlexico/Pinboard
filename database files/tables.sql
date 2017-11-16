@@ -1,4 +1,4 @@
---Tables for CMPT 350 project
+/*Tables for CMPT 350 project*/
 /*
 Tables created here are for PinBoard CMPT350 Project 
 This project is being developed by Andrew Magnus, Evan Closson, and Joseph Gates
@@ -32,6 +32,7 @@ lat double NOT NULL,
 lng double NOT NULL,
 description text NOT NULL, 
 isVisited boolean NOT NULL,
+timesVisited int,
 PRIMARY KEY(id)
 );
 

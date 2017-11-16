@@ -13,32 +13,26 @@ $lat = (double)$_POST["lat"];
 $lng = (double)$_POST["lng"];
 $desc = $_POST["description"];
 $isVisited = $_POST["isVisited"];
+$timesVisited = $_POST["timesVisited"];
 
 //create connection to the database
-
+try{
 $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-//$conn = new mysqli($servername, $username, $password, $dbname);
-
-	//select all the pin information for this user
-	$sql = "INSERT INTO pin_table (email, title, address, lat, lng, description, isVisited) VALUES ('".$email."', '".$title."', '".$address."', ".$lat.", ".$lng.", '".$desc."', ".$isVisited.");";
-	$result = $conn->query($sql);
-	echo $sql;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//$stmt = $conn->prepare("INSERT INTO pin_table (email, title, address, lat, lng, description, isVisited, timesVisited) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+//$stmt->execute([$email,$title,$address,$lat,$lng,$desc,$isVisited,$timesVisited]);
+//select all the pin information for this user
+if (empty($timesVisited))
+{
+	$timesVisited = 0;
+}
+$sql = "INSERT INTO pin_table (email, title, address, lat, lng, description, isVisited, timesVisited) VALUES ('".$email."', '".$title."', '".$address."', ".$lat.", ".$lng.", '".$desc."', ".$isVisited.", ".$timesVisited.");";
+$result = $conn->query($sql);
+echo $sql;
+}
+catch(PDOException $e)
+{
+	echo "xplosive failz " . $e;
+}
 
 ?>
